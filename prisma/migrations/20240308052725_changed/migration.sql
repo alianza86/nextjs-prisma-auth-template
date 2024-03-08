@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Post" ALTER COLUMN "userId" SET DEFAULT '',
+ALTER COLUMN "tenantId" SET DEFAULT '';

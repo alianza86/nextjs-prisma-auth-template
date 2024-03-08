@@ -4,5 +4,21 @@
 
 
 body{
-  @apply bg-neutral-900
+  @apply bg-neutral-900;
+}
+
+.title{
+  @apply text-slate-200 font-bold text-4xl mb-4;
+}
+
+.container{
+  @apply h-screen flex flex-col mx-auto max-w-screen-md py-8 px-8 mt-8;
+}
+
+.formContainer{
+  @apply grid grid-cols-1 gap-4
+}
+
+.btn-primary{
+  @apply w-full bg-blue-500 text-white p-3 rounded-lg;
 }

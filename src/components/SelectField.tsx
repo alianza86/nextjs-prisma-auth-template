@@ -42,25 +42,25 @@ interface Validations {
   [key: string]: any;
 }
 
-interface InputFieldProps {
+interface SelectFieldProps {
   name: string;
-  type?: string;
   label: string;
+  selectOptions: { value: any; label: string }[];
   register: UseFormRegister<FieldValues>;
   options?: RegisterOptions;
   errors: FieldErrors;
   validations?: Validations;
 }
 
-export default function InputField({
+export default function SelectField({
   name,
-  type,
   label,
+  selectOptions,
   register,
   validations,
   options,
   errors,
-}: InputFieldProps) {
+}: SelectFieldProps) {
   const newOptions: any = {};
 
   if (validations) {
@@ -77,11 +77,18 @@ export default function InputField({
   return (
     <>
       <label className="text-slate-400 mb-2 block text-sm">{label}:</label>
-      <input
-        type={type || "text"}
+      <select
         {...register(name, options || newOptions)}
         className="p-3 rounded block mb-2 bg-slate-700 text-slate-300 w-full outline-none"
-      />
+      >
+        <option value="">Select</option>
+        {selectOptions.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+
       {errors[name] && (
         <span className="text-red-500 text-xs">
           {errors[name]?.message as string}

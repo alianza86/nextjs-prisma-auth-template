@@ -21,4 +21,25 @@ model User {
   password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  posts     Post[]
+}
+
+model Tenant {
+  id    String @id @default(uuid())
+  name  String
+  rfc   String @unique
+  users User[]
+  posts Post[]
+}
+
+model Post {
+  id       String @id @default(uuid())
+  title    String
+  content  String
+  userId   String @default("")
+  user     User   @relation(fields: [userId], references: [id])
+  tenantId String @default("")
+  tenant   Tenant @relation(fields: [tenantId], references: [id])
 }

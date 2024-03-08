@@ -1,13 +1,12 @@
 import Link from "next/link";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { auth } from "@/lib/auth";
 
 export default async function Navbar() {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   return (
     <nav className="flex justify-between bg-zinc-800  text-white px-24 items-center py-3">
-      <h1 className="text-xl font-bold">NextAuth</h1>
+      <h2 className="text-xl font-bold">NextAuth</h2>
       <ul className="flex gap-2">
         {!session?.user ? (
           <>
@@ -18,13 +17,16 @@ export default async function Navbar() {
               <Link href="/auth/login">Login</Link>
             </li>
             <li>
+              <Link href="/auth/tenants">Tenants</Link>
+            </li>
+            <li>
               <Link href="/auth/register">Register</Link>
             </li>
           </>
         ) : (
           <>
             <li>
-              <Link href="/posts">Dashboard</Link>
+              <Link href="/posts">Posts</Link>
             </li>
             <li>
               <Link href="/api/auth/signout">Logout</Link>
