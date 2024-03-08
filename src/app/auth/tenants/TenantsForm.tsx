@@ -3,8 +3,9 @@
 import InputField from "../../../components/InputField";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
+import { createTenant } from "./tenants";
 
-export default function NewTenant() {
+export default function TenantsForm() {
   const {
     handleSubmit,
     register,
@@ -14,21 +15,15 @@ export default function NewTenant() {
   const router = useRouter();
 
   const onSubmit = handleSubmit(async (data) => {
-    const res = await fetch("/api/auth/tenants", {
-      method: "POST",
-      body: JSON.stringify(data),
-    });
-
-    if (res.ok) {
-      router.refresh();
-    }
+    const newTenant = await createTenant(data);
+    router.refresh();
   });
 
   return (
     <div className="my-8">
       <form action="" onSubmit={onSubmit}>
-        <div className="formContainer w-1/2">
-          <div>
+        <div className="formContainer">
+          <div className="col-span-6">
             <InputField
               name="rfc"
               label="RFC"
@@ -37,7 +32,7 @@ export default function NewTenant() {
               errors={errors}
             />
           </div>
-          <div>
+          <div className="col-span-6">
             <InputField
               name="name"
               label="Name"
@@ -46,7 +41,7 @@ export default function NewTenant() {
               errors={errors}
             />
           </div>
-          <button className="btn-primary">Add Tenant</button>
+          <button className="btn-primary col-span-3 mt-2">Add Tenant</button>
         </div>
       </form>
     </div>

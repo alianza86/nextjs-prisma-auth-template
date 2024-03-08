@@ -15,7 +15,6 @@ const prismaClientSingleton = () => {
           return query(args);
         },
         async create({ model, operation, args, query }) {
-          console.log("llego");
           if (model === "Tenant" || model === "User") return query(args);
 
           const session = await auth();

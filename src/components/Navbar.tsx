@@ -20,7 +20,7 @@ export default async function Navbar() {
               <Link href="/auth/tenants">Tenants</Link>
             </li>
             <li>
-              <Link href="/auth/register">Register</Link>
+              <Link href="/auth/users">Users</Link>
             </li>
           </>
         ) : (

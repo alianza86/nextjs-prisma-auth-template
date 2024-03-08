@@ -16,7 +16,7 @@ body{
 }
 
 .formContainer{
-  @apply grid grid-cols-1 gap-4
+  @apply grid grid-cols-1 gap-4 md:grid-cols-12 md:gap-x-4 md:gap-y-1
 }
 
 .btn-primary{
