@@ -9,6 +9,16 @@ export async function getTenants() {
 }
 
 export async function createTenant(data: any) {
+  const tenantFound = await db.tenant.findUnique({
+    where: {
+      rfc: data.rfc,
+    },
+  });
+
+  if (tenantFound) {
+    throw new Error("Tenant already exists");
+  }
+
   const newTenant = await db.tenant.create({ data });
 
   return newTenant;
