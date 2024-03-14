@@ -20,5 +20,9 @@ body{
 }
 
 .btn-primary{
-  @apply w-full bg-blue-500 text-white p-3 rounded-lg;
+  @apply bg-blue-500 text-white p-3 rounded-lg inline-block;
+}
+
+.errorMessage{
+  @apply  p-3 bg-slate-700 text-red-400 text-sm rounded-lg inline-block;
 }

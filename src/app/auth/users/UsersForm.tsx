@@ -1,48 +1,49 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useFormState } from "react-dom";
 import InputField from "../../../components/InputField";
-import { useRouter } from "next/navigation";
 import SelectField from "../../../components/SelectField";
-import { createUser } from "./users";
+import { createUser, editUser } from "../../actions";
+import { ZodFormattedError } from "zod";
+import { User } from "@prisma/client";
 
-export default function UsersForm({ tenants }: { tenants: any[] }) {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm();
+const EMPTY_STATE: {
+  errors: ZodFormattedError<any, string>;
+  message: string | null;
+} = {
+  errors: {
+    _errors: [],
+  },
+  message: null,
+};
 
-  const router = useRouter();
-
-  const onSubmit = handleSubmit(async (data) => {
-    if (data.password !== data.confirmPassword) {
-      return alert("Passwords do not match");
-    }
-
-    const { confirmPassword: _, ...serverData } = data;
-
-    const newUser = await createUser(serverData);
-    reset();
-    router.refresh();
-  });
+export default function UsersForm({
+  tenants,
+  user,
+}: {
+  tenants: any[];
+  user: User | null;
+}) {
+  const [state, formAction] = useFormState(createUser, EMPTY_STATE);
+  const [editState, editFormAction] = useFormState(
+    editUser.bind(user),
+    EMPTY_STATE
+  );
 
   return (
     <div className="my-8">
-      <form onSubmit={onSubmit}>
+      <form action={formAction}>
         <div className="formContainer">
           <div className="col-span-6">
             <SelectField
               name="tenantId"
               label="Tenant"
+              defaultValue={user?.tenantId}
               selectOptions={tenants.map((tenant) => ({
                 value: tenant.id,
                 label: tenant.name,
               }))}
-              validations={{ required: true }}
-              register={register}
-              errors={errors}
+              errors={state?.errors}
             />
           </div>
           <div className="col-span-6">
@@ -50,27 +51,24 @@ export default function UsersForm({ tenants }: { tenants: any[] }) {
               name="email"
               label="Email"
               type="email"
-              validations={{ required: true }}
-              register={register}
-              errors={errors}
+              defaultValue={user?.email}
+              errors={state?.errors || null}
             />
           </div>
           <div className="col-span-6">
             <InputField
               name="firstName"
               label="First Name"
-              validations={{ required: true }}
-              register={register}
-              errors={errors}
+              defaultValue={user?.firstName}
+              errors={state?.errors}
             />
           </div>
           <div className="col-span-6">
             <InputField
               name="lastName"
               label="Last Name"
-              validations={{ required: true }}
-              register={register}
-              errors={errors}
+              defaultValue={user?.lastName}
+              errors={state?.errors}
             />
           </div>
           <div className="col-span-6">
@@ -78,9 +76,7 @@ export default function UsersForm({ tenants }: { tenants: any[] }) {
               name="password"
               label="Password"
               type="password"
-              validations={{ required: true }}
-              register={register}
-              errors={errors}
+              errors={state?.errors}
             />
           </div>
           <div className="col-span-6">
@@ -88,13 +84,17 @@ export default function UsersForm({ tenants }: { tenants: any[] }) {
               name="confirmPassword"
               label="Confirm Password"
               type="password"
-              validations={{ required: true }}
-              register={register}
-              errors={errors}
+              errors={state?.errors}
             />
           </div>
-          <button className="btn-primary col-span-3 mt-2">Add User</button>
+          {!user && (
+            <button className="btn-primary col-span-2 mt-2">Add User</button>
+          )}
+          {user && (
+            <button className="btn-primary col-span-2 mt-2">Edit User</button>
+          )}
         </div>
+        {state.message && <span className="errorMessage">{state.message}</span>}
       </form>
     </div>
   );

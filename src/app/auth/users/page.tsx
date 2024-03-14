@@ -1,16 +1,18 @@
-import { getTenants } from "../tenants/tenants";
-import UsersForm from "./UsersForm";
+import Link from "next/link";
 import UsersList from "./UsersList";
-import { getUsers } from "./users";
+import db from "@/lib/db";
 
 export default async function UsersPage() {
-  const users = await getUsers();
-  const tenants = await getTenants();
+  const users = await db.user.findMany();
 
   return (
     <section className="container">
       <h1 className="title">Users</h1>
-      <UsersForm tenants={tenants} />
+      <div>
+        <Link className="btn-primary mb-6" href="/auth/users/create">
+          Create User
+        </Link>
+      </div>
       <UsersList users={users} />
     </section>
   );
