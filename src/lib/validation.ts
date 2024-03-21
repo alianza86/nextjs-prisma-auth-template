@@ -29,3 +29,10 @@ export const createTenantSchema = z.object({
 });
 
 export type CreateTenantValues = z.infer<typeof createTenantSchema>;
+
+export const loginSchema = z.object({
+  email: requiredString,
+  password: requiredString.min(3, "Password must be at least 3 characters"),
+});
+
+export type loginValues = z.infer<typeof loginSchema>;

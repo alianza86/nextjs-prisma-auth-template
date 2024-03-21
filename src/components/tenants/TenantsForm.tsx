@@ -84,7 +84,7 @@ export default function TenantsForm({ tenant }: TenantsFormProps) {
             control={control}
             name="rfc"
             render={({ field }) => (
-              <FormItem className="col-span-6">
+              <FormItem className="col-span-12 md:col-span-6">
                 <FormLabel>RFC</FormLabel>
                 <FormControl>
                   <Input placeholder="Your rfc" {...field} />
@@ -97,7 +97,7 @@ export default function TenantsForm({ tenant }: TenantsFormProps) {
             control={control}
             name="name"
             render={({ field }) => (
-              <FormItem className="col-span-6">
+              <FormItem className="col-span-12 md:col-span-6">
                 <FormLabel>Name</FormLabel>
                 <FormControl>
                   <Input {...field} />

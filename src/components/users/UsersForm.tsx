@@ -93,7 +93,7 @@ export default function UsersForm({ tenants, user }: UsersFormProps) {
             control={control}
             name="tenantId"
             render={({ field }) => (
-              <FormItem className="col-span-6">
+              <FormItem className="col-span-12 md:col-span-6">
                 <FormLabel>Tenant</FormLabel>
                 <FormControl>
                   <Select
@@ -120,7 +120,7 @@ export default function UsersForm({ tenants, user }: UsersFormProps) {
             control={control}
             name="email"
             render={({ field }) => (
-              <FormItem className="col-span-6">
+              <FormItem className="col-span-12 md:col-span-6">
                 <FormLabel>Email</FormLabel>
                 <FormControl>
                   <Input
@@ -137,7 +137,7 @@ export default function UsersForm({ tenants, user }: UsersFormProps) {
             control={control}
             name="firstName"
             render={({ field }) => (
-              <FormItem className="col-span-6">
+              <FormItem className="col-span-12 md:col-span-6">
                 <FormLabel>First Name</FormLabel>
                 <FormControl>
                   <Input {...field} />
@@ -150,7 +150,7 @@ export default function UsersForm({ tenants, user }: UsersFormProps) {
             control={control}
             name="lastName"
             render={({ field }) => (
-              <FormItem className="col-span-6">
+              <FormItem className="col-span-12 md:col-span-6">
                 <FormLabel>Last Name</FormLabel>
                 <FormControl>
                   <Input {...field} />
@@ -163,7 +163,7 @@ export default function UsersForm({ tenants, user }: UsersFormProps) {
             control={control}
             name="password"
             render={({ field }) => (
-              <FormItem className="col-span-6">
+              <FormItem className="col-span-12 md:col-span-6">
                 <FormLabel>Password</FormLabel>
                 <FormControl>
                   <Input type="password" {...field} />
@@ -176,7 +176,7 @@ export default function UsersForm({ tenants, user }: UsersFormProps) {
             control={control}
             name="confirmPassword"
             render={({ field }) => (
-              <FormItem className="col-span-6">
+              <FormItem className="col-span-12 md:col-span-6">
                 <FormLabel>Confirm Password</FormLabel>
                 <FormControl>
                   <Input type="password" {...field} />
