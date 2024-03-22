@@ -15,7 +15,7 @@ export default function UserListItem({
   user: { firstName, lastName, email, id, tenant },
 }: JobListItemProps) {
   return (
-    <div className="flex gap-3 items-center rounded-lg border py-3 px-5 border-muted-foreground/50 ">
+    <div className="flex gap-3 items-center rounded-lg border py-3 px-5 bg-card border-muted-foreground/50 ">
       <div className="flex-grow space-y-0">
         <h2 className="text-md font-medium text-foreground">
           {firstName} {lastName}
