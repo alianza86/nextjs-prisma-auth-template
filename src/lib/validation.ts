@@ -43,3 +43,10 @@ export const CreatePostSchema = z.object({
 });
 
 export type CreatePostValues = z.infer<typeof CreatePostSchema>;
+
+export const userFilterSchema = z.object({
+  q: z.string().optional(),
+  tenantId: z.string().optional(),
+});
+
+export type UserFilterValues = z.infer<typeof userFilterSchema>;
