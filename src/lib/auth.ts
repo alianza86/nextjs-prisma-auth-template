@@ -41,6 +41,7 @@ export const config = {
           name: `${userFound.firstName} ${userFound.lastName}`,
           email: userFound.email,
           tenantId: userFound.tenantId,
+          role: userFound.role,
         };
       },
     }),
@@ -50,6 +51,7 @@ export const config = {
       if (session.user) {
         session.user.id = token.id;
         session.user.tenantId = token.tenantId;
+        session.user.role = token.role;
       }
       return session;
     },
@@ -58,6 +60,7 @@ export const config = {
         const u = user as unknown as User;
         token.id = u.id;
         token.tenantId = u.tenantId;
+        token.role = u.role;
       }
       return token;
     },

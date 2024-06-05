@@ -1,12 +1,12 @@
-import LoginForm from "../../../components/LoginForm";
+import PostsForm from "../../../components/posts/PostsForm";
 
 export default async function Page() {
   return (
     <main className="container">
       <div className="text-center">
-        <h1 className="title">Please Login</h1>
+        <h1 className="title">Create New Post</h1>
       </div>
-      <LoginForm />
+      <PostsForm />
     </main>
   );
 }

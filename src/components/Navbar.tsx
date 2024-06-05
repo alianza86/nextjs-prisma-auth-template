@@ -1,13 +1,16 @@
 import Link from "next/link";
 import { auth } from "@/lib/auth";
+import ToggleDarkMode from "./ToggleDarkMode";
+import { Suspense } from "react";
 
 export default async function Navbar() {
   const session = await auth();
 
   return (
-    <nav className="flex justify-between bg-zinc-800  text-white px-24 items-center py-3">
+    <nav className="flex justify-between bg-primary  text-primary-foreground px-24 items-center py-3">
       <h2 className="text-xl font-bold">NextAuth</h2>
-      <ul className="flex gap-2">
+
+      <ul className="flex gap-4 items-center">
         {!session?.user ? (
           <>
             <li>
@@ -15,6 +18,13 @@ export default async function Navbar() {
             </li>
             <li>
               <Link href="/auth/login">Login</Link>
+            </li>
+          </>
+        ) : session.user.role === "admin" ? (
+          <>
+            <li>{session.user.name}</li>
+            <li>
+              <Link href="/api/auth/signout">Logout</Link>
             </li>
             <li>
               <Link href="/auth/tenants">Tenants</Link>
@@ -28,11 +38,15 @@ export default async function Navbar() {
             <li>
               <Link href="/posts">Posts</Link>
             </li>
+            <li>{session.user.name}</li>
             <li>
               <Link href="/api/auth/signout">Logout</Link>
             </li>
           </>
         )}
+        <li className="flex items-center">
+          <ToggleDarkMode />
+        </li>
       </ul>
     </nav>
   );
