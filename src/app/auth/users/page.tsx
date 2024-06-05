@@ -35,6 +35,7 @@ export default async function Page({
         <UsersList
           filterValues={filterValues}
           page={page ? parseInt(page) : undefined}
+          pageSize={pageSize ? parseInt(pageSize) : undefined}
         />
       </section>
     </main>
