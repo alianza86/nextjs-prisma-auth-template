@@ -14,6 +14,15 @@ const prismaClientSingleton = () => {
           args.where = { ...args.where, tenantId: session.user.tenantId };
           return query(args);
         },
+        async count({ model, operation, args, query }) {
+          if (model === "Tenant" || model === "User") return query(args);
+
+          const session = await auth();
+
+          if (!session?.user) return query(args);
+          args.where = { ...args.where, tenantId: session.user.tenantId };
+          return query(args);
+        },
         async create({ model, operation, args, query }) {
           if (model === "Tenant" || model === "User") return query(args);
 

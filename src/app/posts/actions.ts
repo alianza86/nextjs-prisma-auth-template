@@ -8,12 +8,12 @@ import { CreatePostSchema } from "../../lib/validation";
 export async function createPost(formData: FormData) {
   const values = Object.fromEntries(formData.entries());
 
-  const { title, content } = CreatePostSchema.parse(values);
+  const { content, title } = CreatePostSchema.parse(values);
 
   await db.post.create({
     data: {
-      title: title.trim(),
       content: content.trim(),
+      title: title.trim(),
     },
   });
 
@@ -21,7 +21,11 @@ export async function createPost(formData: FormData) {
   redirect("/posts");
 }
 
-export async function editPost(id: string, formData: FormData) {
+export async function editPost(
+  id: string,
+  formData: FormData,
+  searchParams: string
+) {
   const values = Object.fromEntries(formData.entries());
 
   const { title, content } = CreatePostSchema.parse(values);
@@ -35,10 +39,10 @@ export async function editPost(id: string, formData: FormData) {
   });
 
   revalidatePath("/posts");
-  redirect("/posts");
+  redirect(`/posts?${searchParams}`);
 }
 
 export async function deletePost(id: string) {
   await db.post.delete({ where: { id } });
-  revalidatePath("/posts");
+  revalidatePath("posts");
 }

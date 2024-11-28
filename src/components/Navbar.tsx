@@ -7,7 +7,7 @@ export default async function Navbar() {
   const session = await auth();
 
   return (
-    <nav className="flex justify-between bg-primary  text-primary-foreground px-24 items-center py-3">
+    <nav className="flex justify-between border-b px-24 items-center py-3">
       <h2 className="text-xl font-bold">NextAuth</h2>
 
       <ul className="flex gap-4 items-center">

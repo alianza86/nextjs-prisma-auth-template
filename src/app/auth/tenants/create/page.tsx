@@ -1,4 +1,4 @@
-import TenantsForm from "../../../../components/tenants/TenantsForm";
+import TenantsForm from "../TenantsForm";
 
 export default async function CreateTenantPage() {
   return (

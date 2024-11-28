@@ -1,34 +1,36 @@
 "use client";
 
 import { Tenant } from "@prisma/client";
-import { UserFilterValues, userFilterSchema } from "../../lib/validation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { filterUsers } from "../../app/auth/users/actions";
+
+import { Loader2 } from "lucide-react";
+import Link from "next/link";
+import { useSearchParams, useRouter } from "next/navigation";
+import { userFilterSchema, UserFilterValues } from "../../../lib/validation";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
-} from "../ui/form";
-
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
-import { Loader2 } from "lucide-react";
-import SelectCustom from "../ui/select-custom";
-import Link from "next/link";
+} from "../../../components/ui/form";
+import { Button } from "../../../components/ui/button";
+import SelectCustom from "../../../components/ui/select-custom";
+import { Input } from "../../../components/ui/input";
+import { SearchParams } from "./page";
 
 interface UserFilterProps {
-  defaultValues: UserFilterValues;
   tenants: Tenant[];
 }
 
-export default function UsersFilter({
-  defaultValues,
-  tenants,
-}: UserFilterProps) {
+export default function UsersFilter({ tenants }: UserFilterProps) {
+  const searchParams = useSearchParams();
+  const params: SearchParams = Object.fromEntries(searchParams);
+  const { page, pageSize, ...defaultValues } = params;
+
+  const router = useRouter();
+
   const form = useForm<UserFilterValues>({
     mode: "onBlur",
     defaultValues: {
@@ -47,35 +49,32 @@ export default function UsersFilter({
     formState: { isSubmitting },
   } = form;
 
-  const onSubmit = async (values: UserFilterValues) => {
-    const formData = new FormData();
-
-    Object.entries(values).forEach(([key, value]) => {
-      if (value) {
-        formData.append(key, value);
-      }
-    });
-
-    try {
-      await filterUsers(formData);
-    } catch (error) {
-      alert("Something went wrong..."); //toast
-    }
-  };
-
   // useEffect(() => {
   //   const subscription = watch(() => handleSubmit(onSubmit)());
   //   return () => subscription.unsubscribe();
-  // }, [watch, handleSubmit]);
+  // }, [handleSubmit, watch]);
+
+  const onSubmit = async (values: UserFilterValues) => {
+    const data: any = {};
+
+    Object.entries(values).forEach(([key, value]) => {
+      if (value) {
+        data[key] = value;
+      }
+    });
+
+    const updatedSearchParams = new URLSearchParams(data);
+
+    router.push(`/auth/users?${updatedSearchParams.toString()}`);
+  };
 
   async function onClear() {
-    reset();
-    const formData = new FormData();
-    try {
-      await filterUsers(formData);
-    } catch (error) {
-      alert("Something went wrong..."); //toast
-    }
+    reset({
+      tenantId: "",
+      q: "",
+    });
+
+    router.push("/auth/users");
   }
 
   return (
@@ -140,8 +139,8 @@ export default function UsersFilter({
               </Button>
             </div>
             <div>
-              <Link className="btn-primary" href="/auth/users/create">
-                <Button variant={"outline"}>Create New User</Button>
+              <Link className="btn-primary" href={"/auth/users/create"}>
+                <Button variant={"secondary"}>Create New User</Button>
               </Link>
             </div>
           </div>

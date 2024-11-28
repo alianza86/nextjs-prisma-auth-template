@@ -2,8 +2,9 @@
 
 import { Tenant } from "@prisma/client";
 import { CircleX, Pencil } from "lucide-react";
-import { deleteTenant } from "../../app/auth/tenants/actions";
 import Link from "next/link";
+import { deleteTenant } from "./actions";
+import { useSearchParams } from "next/navigation";
 
 interface TenantListItemProps {
   tenant: Tenant;
@@ -12,6 +13,8 @@ interface TenantListItemProps {
 export default function TenantListItem({
   tenant: { id, rfc, name },
 }: TenantListItemProps) {
+  const searchParams = useSearchParams().toString();
+
   return (
     <div className="flex gap-3 items-center rounded-lg border py-3 px-5 bg-card border-muted-foreground/50">
       <div className="flex-grow space-y-0">
@@ -22,7 +25,7 @@ export default function TenantListItem({
         <button type="button" className="" onClick={() => deleteTenant(id)}>
           <CircleX className="text-muted-foreground" />
         </button>
-        <Link href={`tenants/${id}`}>
+        <Link href={`tenants/${id}?${searchParams}`}>
           <Pencil className="text-muted-foreground" />
         </Link>
       </div>

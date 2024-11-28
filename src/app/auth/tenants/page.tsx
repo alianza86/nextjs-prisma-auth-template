@@ -1,20 +1,26 @@
-import Link from "next/link";
-import TenantsList from "../../../components/tenants/TenantsList";
-import { Button } from "../../../components/ui/button";
+import { SearchParams } from "../users/page";
+import TenantsFilter from "./TenantsFilter";
+import TenantsList from "./TenantsList";
 
-export default async function Page() {
+export interface TenantSearchParams {
+  q?: string;
+  page?: string;
+  pageSize?: string;
+}
+
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
   return (
     <main className="container">
       <div className="text-center">
         <h1 className="title">Tenants</h1>
       </div>
       <section className="flex flex-col gap-4">
-        <div>
-          <Link className="btn-primary mb-6" href="/auth/tenants/create">
-            <Button variant={"default"}>Create New Tenant</Button>
-          </Link>
-        </div>
-        <TenantsList />
+        <TenantsFilter />
+        <TenantsList params={searchParams} />
       </section>
     </main>
   );

@@ -2,8 +2,15 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Post } from "@prisma/client";
-import { CreatePostSchema, CreatePostValues } from "../../lib/validation";
+import { Tenant } from "@prisma/client";
+import { Loader2 } from "lucide-react";
+import Link from "next/link";
+import {
+  createTenantSchema,
+  CreateTenantValues,
+} from "../../../lib/validation";
+import { useSearchParams } from "next/navigation";
+import { createTenant, editTenant, tenantExists } from "./actions";
 import {
   Form,
   FormControl,
@@ -11,26 +18,25 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../ui/form";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
-import { Loader2 } from "lucide-react";
-import Link from "next/link";
-import { createPost, editPost } from "../../app/posts/actions";
+} from "../../../components/ui/form";
+import { Button } from "../../../components/ui/button";
+import { Input } from "../../../components/ui/input";
 
-interface PostsFormProps {
-  post?: Post;
+interface TenantsFormProps {
+  tenant?: Tenant;
 }
 
-export default function PostsForm({ post }: PostsFormProps) {
-  const form = useForm<CreatePostValues>({
+export default function TenantsForm({ tenant }: TenantsFormProps) {
+  const form = useForm<CreateTenantValues>({
     mode: "onBlur",
     defaultValues: {
-      title: post?.title || "",
-      content: post?.content || "",
+      rfc: tenant?.rfc || "",
+      name: tenant?.name || "",
     },
-    resolver: zodResolver(CreatePostSchema),
+    resolver: zodResolver(createTenantSchema),
   });
+
+  const searchParams = useSearchParams().toString();
 
   const {
     handleSubmit,
@@ -39,7 +45,16 @@ export default function PostsForm({ post }: PostsFormProps) {
     formState: { isSubmitting },
   } = form;
 
-  async function onSubmit(values: CreatePostValues) {
+  async function onSubmit(values: CreateTenantValues) {
+    const exists = await tenantExists(values.rfc, tenant?.rfc);
+
+    if (exists) {
+      setError("rfc", {
+        message: "Tenant already exists!",
+      });
+      return;
+    }
+
     const formData = new FormData();
 
     Object.entries(values).forEach(([key, value]) => {
@@ -49,11 +64,11 @@ export default function PostsForm({ post }: PostsFormProps) {
     });
 
     try {
-      if (post) {
-        await editPost(post.id, formData);
+      if (tenant) {
+        await editTenant(tenant.id, formData, searchParams);
         return;
       }
-      await createPost(formData);
+      await createTenant(formData);
     } catch (error) {
       alert("Something went wrong..."); //toast
     }
@@ -69,12 +84,12 @@ export default function PostsForm({ post }: PostsFormProps) {
         >
           <FormField
             control={control}
-            name="title"
+            name="rfc"
             render={({ field }) => (
-              <FormItem className="col-span-12">
-                <FormLabel>Title</FormLabel>
+              <FormItem className="col-span-12 md:col-span-6">
+                <FormLabel>RFC</FormLabel>
                 <FormControl>
-                  <Input placeholder="The post title" {...field} />
+                  <Input placeholder="Your rfc" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -82,12 +97,12 @@ export default function PostsForm({ post }: PostsFormProps) {
           />
           <FormField
             control={control}
-            name="content"
+            name="name"
             render={({ field }) => (
-              <FormItem className="col-span-12">
-                <FormLabel>Content</FormLabel>
+              <FormItem className="col-span-12 md:col-span-6">
+                <FormLabel>Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="Your content" {...field} />
+                  <Input {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -95,7 +110,7 @@ export default function PostsForm({ post }: PostsFormProps) {
           />
 
           <div className="col-span-12 space-x-3">
-            <Link href="/posts">
+            <Link href={`/auth/tenants?${searchParams}`}>
               <Button type="button" variant="outline">
                 Go Back
               </Button>
@@ -104,7 +119,7 @@ export default function PostsForm({ post }: PostsFormProps) {
               {isSubmitting && (
                 <Loader2 className=" mr-2 w-4 h-4 animate-spin" />
               )}
-              {post ? "Modify Post" : "Create Post"}
+              {tenant ? "Modify Tenant" : "Create Tenant"}
             </Button>
           </div>
         </form>

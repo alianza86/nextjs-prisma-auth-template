@@ -1,28 +1,26 @@
-import Link from "next/link";
-import UsersList from "../../../components/users/UsersList";
-import { Button } from "../../../components/ui/button";
-import { UserFilterValues } from "../../../lib/validation";
 import db from "@/lib/db";
-import UsersFilter from "../../../components/users/UsersFilter";
+import UsersList from "./UsersList";
+import UsersFilter from "./UsersFilter";
 
-interface PageProps {
-  searchParams: {
-    q?: string;
-    tenantId?: string;
-    page?: string;
-    pageSize?: string;
-  };
+// interface PageProps {
+//   searchParams: {
+
+//   };
+// }
+
+export interface SearchParams {
+  q?: string;
+  tenantId?: string;
+  page?: string;
+  pageSize?: string;
 }
 
 export default async function Page({
-  searchParams: { q, tenantId, page, pageSize },
-}: PageProps) {
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
   const tenants = await db.tenant.findMany({});
-
-  const filterValues: UserFilterValues = {
-    q,
-    tenantId,
-  };
 
   return (
     <main className="container">
@@ -31,12 +29,8 @@ export default async function Page({
       </div>
       <section className="flex flex-col gap-4">
         <div className="w-full flex justify-end"></div>
-        <UsersFilter defaultValues={filterValues} tenants={tenants} />
-        <UsersList
-          filterValues={filterValues}
-          page={page ? parseInt(page) : undefined}
-          pageSize={pageSize ? parseInt(pageSize) : undefined}
-        />
+        <UsersFilter tenants={tenants} />
+        <UsersList params={searchParams} />
       </section>
     </main>
   );

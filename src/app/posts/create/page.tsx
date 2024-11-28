@@ -1,6 +1,6 @@
-import PostsForm from "../../../components/posts/PostsForm";
+import PostsForm from "../PostsForm";
 
-export default async function Page() {
+export default async function CreatePostPage() {
   return (
     <main className="container">
       <div className="text-center">

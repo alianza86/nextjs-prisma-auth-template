@@ -1,5 +1,5 @@
 import db from "@/lib/db";
-import PostsForm from "../../../components/posts/PostsForm";
+import PostsForm from "../PostsForm";
 
 interface EditPostPageProps {
   params: { id: string };
