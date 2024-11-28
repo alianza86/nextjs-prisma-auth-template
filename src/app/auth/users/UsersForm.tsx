@@ -3,27 +3,28 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Tenant, User } from "@prisma/client";
-import { CreateUserValues, createUserSchema } from "../../lib/validation";
-import { createUser, editUser, userExists } from "../../app/auth/users/actions";
+import { Loader2 } from "lucide-react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { createUserSchema, CreateUserValues } from "../../../lib/validation";
+import { createUser, editUser, userExists } from "./actions";
+import { Button } from "../../../components/ui/button";
 import {
   Form,
-  FormControl,
   FormField,
   FormItem,
   FormLabel,
+  FormControl,
   FormMessage,
-} from "../ui/form";
-import { Input } from "../ui/input";
+} from "../../../components/ui/form";
+import { Input } from "../../../components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../ui/select";
-import { Button } from "../ui/button";
-import { Loader2 } from "lucide-react";
-import Link from "next/link";
+} from "../../../components/ui/select";
 
 interface UsersFormProps {
   tenants: Tenant[];
@@ -44,6 +45,8 @@ export default function UsersForm({ tenants, user }: UsersFormProps) {
     resolver: zodResolver(createUserSchema),
   });
 
+  const searchParams = useSearchParams().toString();
+
   const {
     handleSubmit,
     control,
@@ -52,7 +55,6 @@ export default function UsersForm({ tenants, user }: UsersFormProps) {
   } = form;
 
   async function onSubmit(values: CreateUserValues) {
-    console.log(values.email, user?.email);
     const exists = await userExists(values.email, user?.email);
 
     if (exists) {
@@ -72,7 +74,7 @@ export default function UsersForm({ tenants, user }: UsersFormProps) {
 
     try {
       if (user) {
-        await editUser(user.id, formData, user.password);
+        await editUser(user.id, formData, user.password, searchParams);
         return;
       }
       await createUser(formData);
@@ -186,8 +188,8 @@ export default function UsersForm({ tenants, user }: UsersFormProps) {
             )}
           />
           <div className="col-span-12 space-x-3">
-            <Link href="/auth/users">
-              <Button type="button" variant="outline">
+            <Link href={`/auth/users?${searchParams}`}>
+              <Button type="button" variant="secondary">
                 Go Back
               </Button>
             </Link>

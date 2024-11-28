@@ -1,20 +1,25 @@
-import Link from "next/link";
-import { Button } from "../../components/ui/button";
-import PostsList from "../../components/posts/PostsList";
+import PostsFilter from "./PostsFilter";
+import PostsList from "./PostsList";
 
-export default async function Page() {
+export interface PostSearchParams {
+  q?: string;
+  page?: string;
+  pageSize?: string;
+}
+
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: PostSearchParams;
+}) {
   return (
     <main className="container">
       <div className="text-center">
         <h1 className="title">Posts</h1>
       </div>
       <section className="flex flex-col gap-4">
-        <div>
-          <Link className="btn-primary mb-6" href="/posts/create">
-            <Button variant={"default"}>Create New Post</Button>
-          </Link>
-        </div>
-        <PostsList />
+        <PostsFilter />
+        <PostsList params={searchParams} />
       </section>
     </main>
   );

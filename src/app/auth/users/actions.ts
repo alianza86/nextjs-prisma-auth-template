@@ -4,7 +4,7 @@ import db from "@/lib/db";
 import bcrypt from "bcrypt";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { createUserSchema, userFilterSchema } from "../../../lib/validation";
+import { createUserSchema } from "../../../lib/validation";
 
 export async function createUser(formData: FormData) {
   const values = Object.fromEntries(formData.entries());
@@ -31,7 +31,8 @@ export async function createUser(formData: FormData) {
 export async function editUser(
   id: string,
   formData: FormData,
-  originalPassword: string
+  originalPassword: string,
+  searchParams: string
 ) {
   const values = Object.fromEntries(formData.entries());
 
@@ -53,7 +54,7 @@ export async function editUser(
   });
 
   revalidatePath("/auth/users");
-  redirect("/auth/users");
+  redirect(`/auth/users?${searchParams}`);
 }
 
 export async function deleteUser(id: string) {
@@ -71,15 +72,15 @@ export async function userExists(email: string, originalEmail?: string) {
   return !!user;
 }
 
-export async function filterUsers(formData: FormData) {
-  const values = Object.fromEntries(formData.entries());
+// export async function filterUsers(formData: FormData) {
+//   const values = Object.fromEntries(formData.entries());
 
-  const { q, tenantId } = userFilterSchema.parse(values);
+//   const { q, tenantId } = userFilterSchema.parse(values);
 
-  const searchParams = new URLSearchParams({
-    ...(q && { q: q.trim() }),
-    ...(tenantId && { tenantId }),
-  });
+//   const searchParams = new URLSearchParams({
+//     ...(q && { q: q.trim() }),
+//     ...(tenantId && { tenantId }),
+//   });
 
-  redirect(`/auth/users/?${searchParams.toString()}`);
-}
+//   redirect(`/auth/users/?${searchParams.toString()}`);
+// }

@@ -21,7 +21,11 @@ export async function createTenant(formData: FormData) {
   redirect("/auth/tenants");
 }
 
-export async function editTenant(id: string, formData: FormData) {
+export async function editTenant(
+  id: string,
+  formData: FormData,
+  searchParams: string
+) {
   const values = Object.fromEntries(formData.entries());
 
   const { rfc, name } = createTenantSchema.parse(values);
@@ -35,7 +39,7 @@ export async function editTenant(id: string, formData: FormData) {
   });
 
   revalidatePath("/auth/tenants");
-  redirect("/auth/tenants");
+  redirect(`/auth/tenants?${searchParams}`);
 }
 
 export async function deleteTenant(id: string) {

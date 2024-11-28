@@ -1,5 +1,5 @@
 import db from "@/lib/db";
-import TenantsForm from "../../../../components/tenants/TenantsForm";
+import TenantsForm from "../TenantsForm";
 
 interface EditTenantPageProps {
   params: { id: string };

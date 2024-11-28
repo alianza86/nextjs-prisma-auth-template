@@ -1,5 +1,5 @@
 import db from "@/lib/db";
-import UsersForm from "@/components/users/UsersForm";
+import UsersForm from "../UsersForm";
 
 interface EditUserPageProps {
   params: { id: string };

@@ -1,75 +1,66 @@
 import db from "@/lib/db";
-import UserListItem from "./UserListItem";
-import { UserFilterValues } from "../../lib/validation";
 import { Prisma } from "@prisma/client";
 import Link from "next/link";
-import { cn } from "../../lib/utils";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import { PostFilterValues } from "../../lib/validation";
+import { cn } from "../../lib/utils";
+import { PostSearchParams } from "./page";
+import PostListItem from "./PostListItem";
 
-interface UsersListProps {
-  filterValues: UserFilterValues;
-  page?: number;
-  pageSize?: number;
-}
-
-export default async function UsersList({
-  filterValues,
-  page = 1,
-  pageSize = 2,
-}: UsersListProps) {
-  const { q, tenantId } = filterValues;
-
-  const skip = (page - 1) * pageSize;
+export default async function PostsList({
+  params: { q, page = "1", pageSize = "2" },
+}: {
+  params: PostSearchParams;
+}) {
+  const skip = (+page - 1) * +pageSize;
 
   const searchString = q
     ?.split(" ")
     .filter((word) => word.length > 0)
     .join(" & ");
 
-  const searchFilter: Prisma.UserWhereInput = searchString
+  const searchFilter: Prisma.PostWhereInput = searchString
     ? {
         OR: [
-          { email: { contains: q, mode: "insensitive" } },
-          { firstName: { contains: q, mode: "insensitive" } },
-          { lastName: { contains: q, mode: "insensitive" } },
+          { title: { contains: q, mode: "insensitive" } },
+          { content: { contains: q, mode: "insensitive" } },
         ],
       }
     : {};
 
-  const where: Prisma.UserWhereInput = {
-    AND: [searchFilter, tenantId ? { tenantId } : {}],
+  const where: Prisma.PostWhereInput = {
+    AND: [searchFilter],
   };
 
-  const usersPromise = db.user.findMany({
+  const postsPromise = db.post.findMany({
     where,
-    include: { tenant: true },
-    orderBy: { firstName: "asc" },
-    take: pageSize,
+    orderBy: { title: "asc" },
+    take: +pageSize,
     skip,
   });
 
-  const countPromise = db.user.count({ where });
+  const countPromise = db.post.count({ where });
 
-  const [users, totalResults] = await Promise.all([usersPromise, countPromise]);
+  const [posts, totalResults] = await Promise.all([postsPromise, countPromise]);
 
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 gap-4">
-        {users.map((user) => (
-          <UserListItem user={user} key={user.id} />
+        {posts.map((post) => (
+          <PostListItem post={post} key={post.id} />
         ))}
       </div>
-      {users.length === 0 && (
+      {posts.length === 0 && (
         <p className="mx-auto text-center">
-          No users found. Try adjusting your search filters
+          No posts found. Try adjusting your search filters
         </p>
       )}
-      {users.length > 0 && (
+      {posts.length > 0 && (
         <Pagination
-          currentPage={page}
-          pageSize={pageSize}
-          totalPages={Math.ceil(totalResults / pageSize)}
-          filterValues={filterValues}
+          currentPage={+page}
+          pageSize={+pageSize}
+          totalPages={Math.ceil(totalResults / +pageSize)}
+          filterValues={{ q }}
         />
       )}
     </div>
@@ -80,24 +71,23 @@ interface PaginationProps {
   currentPage: number;
   pageSize: number;
   totalPages: number;
-  filterValues: UserFilterValues;
+  filterValues: PostFilterValues;
 }
 
 function Pagination({
   currentPage,
   totalPages,
   pageSize,
-  filterValues: { q, tenantId },
+  filterValues: { q },
 }: PaginationProps) {
   function generatePageLink(page: number) {
     const searchParams = new URLSearchParams({
       ...(q && { q }),
-      ...(tenantId && { tenantId }),
       page: page.toString(),
       pageSize: pageSize.toString(),
     });
 
-    return `/auth/users/?${searchParams.toString()}`;
+    return `/posts/?${searchParams.toString()}`;
   }
 
   return (

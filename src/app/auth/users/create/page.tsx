@@ -1,5 +1,5 @@
 import db from "@/lib/db";
-import UsersForm from "../../../../components/users/UsersForm";
+import UsersForm from "../UsersForm";
 
 export default async function CreateUserPage() {
   const tenants = await db.tenant.findMany();

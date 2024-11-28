@@ -2,13 +2,12 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Tenant } from "@prisma/client";
-import { CreateTenantValues, createTenantSchema } from "../../lib/validation";
-import {
-  createTenant,
-  editTenant,
-  tenantExists,
-} from "../../app/auth/tenants/actions";
+import { Post } from "@prisma/client";
+import { Loader2 } from "lucide-react";
+import Link from "next/link";
+import { CreatePostSchema, CreatePostValues } from "../../lib/validation";
+import { useSearchParams } from "next/navigation";
+import { createPost, editPost } from "./actions";
 import {
   Form,
   FormControl,
@@ -16,25 +15,25 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../ui/form";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
-import { Loader2 } from "lucide-react";
-import Link from "next/link";
+} from "../../components/ui/form";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
 
-interface TenantsFormProps {
-  tenant?: Tenant;
+interface PostsFormProps {
+  post?: Post;
 }
 
-export default function TenantsForm({ tenant }: TenantsFormProps) {
-  const form = useForm<CreateTenantValues>({
+export default function PostsForm({ post }: PostsFormProps) {
+  const form = useForm<CreatePostValues>({
     mode: "onBlur",
     defaultValues: {
-      rfc: tenant?.rfc || "",
-      name: tenant?.name || "",
+      title: post?.title || "",
+      content: post?.content || "",
     },
-    resolver: zodResolver(createTenantSchema),
+    resolver: zodResolver(CreatePostSchema),
   });
+
+  const searchParams = useSearchParams().toString();
 
   const {
     handleSubmit,
@@ -43,16 +42,7 @@ export default function TenantsForm({ tenant }: TenantsFormProps) {
     formState: { isSubmitting },
   } = form;
 
-  async function onSubmit(values: CreateTenantValues) {
-    const exists = await tenantExists(values.rfc, tenant?.rfc);
-
-    if (exists) {
-      setError("rfc", {
-        message: "Tenant already exists!",
-      });
-      return;
-    }
-
+  async function onSubmit(values: CreatePostValues) {
     const formData = new FormData();
 
     Object.entries(values).forEach(([key, value]) => {
@@ -62,11 +52,11 @@ export default function TenantsForm({ tenant }: TenantsFormProps) {
     });
 
     try {
-      if (tenant) {
-        await editTenant(tenant.id, formData);
+      if (post) {
+        await editPost(post.id, formData, searchParams);
         return;
       }
-      await createTenant(formData);
+      await createPost(formData);
     } catch (error) {
       alert("Something went wrong..."); //toast
     }
@@ -82,12 +72,12 @@ export default function TenantsForm({ tenant }: TenantsFormProps) {
         >
           <FormField
             control={control}
-            name="rfc"
+            name="title"
             render={({ field }) => (
               <FormItem className="col-span-12 md:col-span-6">
-                <FormLabel>RFC</FormLabel>
+                <FormLabel>Title</FormLabel>
                 <FormControl>
-                  <Input placeholder="Your rfc" {...field} />
+                  <Input {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -95,10 +85,10 @@ export default function TenantsForm({ tenant }: TenantsFormProps) {
           />
           <FormField
             control={control}
-            name="name"
+            name="content"
             render={({ field }) => (
               <FormItem className="col-span-12 md:col-span-6">
-                <FormLabel>Name</FormLabel>
+                <FormLabel>Content</FormLabel>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -108,16 +98,14 @@ export default function TenantsForm({ tenant }: TenantsFormProps) {
           />
 
           <div className="col-span-12 space-x-3">
-            <Link href="/auth/tenants">
-              <Button type="button" variant="outline">
-                Go Back
-              </Button>
-            </Link>
+            <Button type="button" variant="outline" tabIndex={-1} asChild>
+              <Link href={`/posts?${searchParams}`}>Go Back</Link>
+            </Button>
             <Button disabled={isSubmitting} className="mt-3">
               {isSubmitting && (
                 <Loader2 className=" mr-2 w-4 h-4 animate-spin" />
               )}
-              {tenant ? "Modify Tenant" : "Create Tenant"}
+              {post ? "Modify Post" : "Create Post"}
             </Button>
           </div>
         </form>
