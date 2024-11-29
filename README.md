@@ -38,5 +38,5 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 ## Pendientes de Template
 
 - Terminar de crear componente general de paginación
-- Crear componentes dinamicos de Input, y ver la posibilidad de un archivo de configuración de la forma
+- Ver la posibilidad de un archivo de configuración de la forma
 - Proteger rutas a nivel router de usuarios autentificados pero por roles

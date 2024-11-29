@@ -7,7 +7,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
-import { userFilterSchema, UserFilterValues } from "../../../lib/validation";
 import {
   Form,
   FormControl,
@@ -19,10 +18,19 @@ import { Button } from "../../../components/ui/button";
 import SelectCustom from "../../../components/ui/select-custom";
 import { Input } from "../../../components/ui/input";
 import { SearchParams } from "./page";
+import { z } from "zod";
+import { DynamicInput } from "../../../components/ui/dynamic-input";
 
 interface UserFilterProps {
   tenants: Tenant[];
 }
+
+export const userFilterSchema = z.object({
+  q: z.string().optional(),
+  tenantId: z.string().optional(),
+});
+
+export type UserFilterValues = z.infer<typeof userFilterSchema>;
 
 export default function UsersFilter({ tenants }: UserFilterProps) {
   const searchParams = useSearchParams();
@@ -81,46 +89,31 @@ export default function UsersFilter({ tenants }: UserFilterProps) {
     <section>
       <Form {...form}>
         <form
-          className="grid grid-cols-12 gap-x-4 gap-y-1"
+          className="grid grid-cols-12 gap-x-4 gap-y-1 items-end"
           noValidate
           key={JSON.stringify(defaultValues)}
           onSubmit={handleSubmit(onSubmit)}
         >
-          <FormField
+          <DynamicInput
             control={control}
-            name="tenantId"
-            render={({ field }) => (
-              <FormItem className="col-span-12 md:col-span-4">
-                {/* <FormLabel>Tenant</FormLabel> */}
-                <FormControl>
-                  <SelectCustom {...field}>
-                    <option value="">All Tenants</option>
-                    {tenants.map((tenant) => (
-                      <option key={tenant.id} value={tenant.id}>
-                        {tenant.name}
-                      </option>
-                    ))}
-                  </SelectCustom>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            className="col-span-12 md:col-span-4"
+            config={{
+              name: "tenantId",
+              type: "select",
+              options: tenants,
+              placeholder: "All Tenants",
+              asyncOptions: { idField: "id", displayValues: ["name"] },
+              emptyOption: true,
+            }}
           />
-          <FormField
+          <DynamicInput
             control={control}
-            name="q"
-            render={({ field }) => (
-              <FormItem className="col-span-12 md:col-span-8">
-                {/* <FormLabel>Search</FormLabel> */}
-                <FormControl>
-                  <Input
-                    placeholder="Search by email, first name or last name"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            className="col-span-12 md:col-span-8"
+            config={{
+              name: "q",
+              type: "text",
+              placeholder: "Search by email, first name or last name",
+            }}
           />
 
           <div className="col-span-12 flex justify-between items-center mt-4">

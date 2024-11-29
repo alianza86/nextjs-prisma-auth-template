@@ -5,23 +5,24 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Post } from "@prisma/client";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
-import { CreatePostSchema, CreatePostValues } from "../../lib/validation";
 import { useSearchParams } from "next/navigation";
 import { createPost, editPost } from "./actions";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "../../components/ui/form";
+import { Form } from "../../components/ui/form";
 import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
+import { z } from "zod";
+import { requiredString } from "../../lib/validation";
+import { DynamicInput } from "../../components/ui/dynamic-input";
 
 interface PostsFormProps {
   post?: Post;
 }
+
+export const CreatePostSchema = z.object({
+  title: requiredString,
+  content: requiredString,
+});
+
+export type CreatePostValues = z.infer<typeof CreatePostSchema>;
 
 export default function PostsForm({ post }: PostsFormProps) {
   const form = useForm<CreatePostValues>({
@@ -70,31 +71,24 @@ export default function PostsForm({ post }: PostsFormProps) {
           noValidate
           onSubmit={handleSubmit(onSubmit)}
         >
-          <FormField
+          <DynamicInput
             control={control}
-            name="title"
-            render={({ field }) => (
-              <FormItem className="col-span-12 md:col-span-6">
-                <FormLabel>Title</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            className="col-span-12 md:col-span-12"
+            config={{
+              name: "title",
+              type: "text",
+              label: "Title",
+            }}
           />
-          <FormField
+          <DynamicInput
             control={control}
-            name="content"
-            render={({ field }) => (
-              <FormItem className="col-span-12 md:col-span-6">
-                <FormLabel>Content</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            className="col-span-12 md:col-span-12"
+            config={{
+              name: "content",
+              type: "textarea",
+              label: "Content",
+              lines: 5,
+            }}
           />
 
           <div className="col-span-12 space-x-3">

@@ -6,30 +6,38 @@ import { Tenant, User } from "@prisma/client";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { createUserSchema, CreateUserValues } from "../../../lib/validation";
 import { createUser, editUser, userExists } from "./actions";
 import { Button } from "../../../components/ui/button";
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormMessage,
-} from "../../../components/ui/form";
-import { Input } from "../../../components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../../../components/ui/select";
+import { Form } from "../../../components/ui/form";
+import { DynamicInput } from "../../../components/ui/dynamic-input";
+import { z } from "zod";
+import { requiredString } from "../../../lib/validation";
 
 interface UsersFormProps {
   tenants: Tenant[];
   user?: User;
 }
+
+export const createUserSchema = z
+  .object({
+    tenantId: z.string().uuid(),
+    email: requiredString.email(),
+    firstName: requiredString,
+    lastName: requiredString,
+    password: requiredString,
+    confirmPassword: requiredString,
+  })
+  .superRefine(({ password, confirmPassword }, ctx) => {
+    if (password !== confirmPassword) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Passwords don't match",
+        path: ["confirmPassword"],
+      });
+    }
+  });
+
+export type CreateUserValues = z.infer<typeof createUserSchema>;
 
 export default function UsersForm({ tenants, user }: UsersFormProps) {
   const form = useForm<CreateUserValues>({
@@ -91,108 +99,68 @@ export default function UsersForm({ tenants, user }: UsersFormProps) {
           noValidate
           onSubmit={handleSubmit(onSubmit)}
         >
-          <FormField
+          <DynamicInput
             control={control}
-            name="tenantId"
-            render={({ field }) => (
-              <FormItem className="col-span-12 md:col-span-6">
-                <FormLabel>Tenant</FormLabel>
-                <FormControl>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={user?.tenantId || field.value}
-                  >
-                    <SelectTrigger className="">
-                      <SelectValue placeholder="Select a tenant" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {tenants.map(({ id, name }) => (
-                        <SelectItem key={id} value={id}>
-                          {name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            className="col-span-12 md:col-span-6"
+            config={{
+              name: "tenantId",
+              type: "select",
+              label: "Tenant",
+              placeholder: "Select a tenant",
+              asyncOptions: { idField: "id", displayValues: ["name"] },
+              options: tenants,
+            }}
           />
-          <FormField
+          <DynamicInput
             control={control}
-            name="email"
-            render={({ field }) => (
-              <FormItem className="col-span-12 md:col-span-6">
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="Your email"
-                    {...field}
-                    // defaultValue={user?.email}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            className="col-span-12 md:col-span-6"
+            config={{
+              name: "email",
+              type: "email",
+              label: "Email",
+              placeholder: "Your email",
+            }}
           />
-          <FormField
+          <DynamicInput
             control={control}
-            name="firstName"
-            render={({ field }) => (
-              <FormItem className="col-span-12 md:col-span-6">
-                <FormLabel>First Name</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            className="col-span-12 md:col-span-6"
+            config={{
+              name: "firstName",
+              type: "text",
+              label: "First Name",
+            }}
           />
-          <FormField
+          <DynamicInput
             control={control}
-            name="lastName"
-            render={({ field }) => (
-              <FormItem className="col-span-12 md:col-span-6">
-                <FormLabel>Last Name</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            className="col-span-12 md:col-span-6"
+            config={{
+              name: "lastName",
+              type: "text",
+              label: "Last Name",
+            }}
           />
-          <FormField
+          <DynamicInput
             control={control}
-            name="password"
-            render={({ field }) => (
-              <FormItem className="col-span-12 md:col-span-6">
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input type="password" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            className="col-span-12 md:col-span-6"
+            config={{
+              name: "password",
+              type: "password",
+              label: "Password",
+            }}
           />
-          <FormField
+          <DynamicInput
             control={control}
-            name="confirmPassword"
-            render={({ field }) => (
-              <FormItem className="col-span-12 md:col-span-6">
-                <FormLabel>Confirm Password</FormLabel>
-                <FormControl>
-                  <Input type="password" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            className="col-span-12 md:col-span-6"
+            config={{
+              name: "confirmPassword",
+              type: "password",
+              label: "Confirm Password",
+            }}
           />
           <div className="col-span-12 space-x-3">
-            <Link href={`/auth/users?${searchParams}`}>
-              <Button type="button" variant="secondary">
-                Go Back
-              </Button>
-            </Link>
+            <Button type="button" variant="secondary" asChild tabIndex={-1}>
+              <Link href={`/auth/users?${searchParams}`}>Go Back</Link>
+            </Button>
             <Button disabled={isSubmitting} className="mt-3">
               {isSubmitting && (
                 <Loader2 className=" mr-2 w-4 h-4 animate-spin" />

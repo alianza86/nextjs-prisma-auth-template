@@ -7,17 +7,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "../../components/ui/form";
+import { Form } from "../../components/ui/form";
 import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
 import { PostSearchParams } from "./page";
-import { postFilterSchema, PostFilterValues } from "../../lib/validation";
+import { z } from "zod";
+import { DynamicInput } from "../../components/ui/dynamic-input";
+
+export const postFilterSchema = z.object({
+  q: z.string().optional(),
+});
+
+export type PostFilterValues = z.infer<typeof postFilterSchema>;
 
 export default function PostsFilter() {
   const searchParams = useSearchParams();
@@ -79,18 +79,14 @@ export default function PostsFilter() {
           key={JSON.stringify(defaultValues)}
           onSubmit={handleSubmit(onSubmit)}
         >
-          <FormField
+          <DynamicInput
             control={control}
-            name="q"
-            render={({ field }) => (
-              <FormItem className="col-span-12 md:col-span-8">
-                {/* <FormLabel>Search</FormLabel> */}
-                <FormControl>
-                  <Input placeholder="Search by title or content" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            className="col-span-12 md:col-span-8"
+            config={{
+              name: "q",
+              type: "text",
+              placeholder: "Search by title or content",
+            }}
           />
 
           <div className="col-span-12 flex justify-between items-center mt-4">
